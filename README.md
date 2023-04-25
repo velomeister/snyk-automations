@@ -1,2 +1,2 @@
 # snyk-automations
-Some basic Snyk scripts to manage SCA vulnerability exceptions in mass.
+Some basic Snyk scripts to manage SCA issue ignores in mass.
