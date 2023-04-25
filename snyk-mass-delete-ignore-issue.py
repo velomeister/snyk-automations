@@ -8,12 +8,11 @@ import datetime
 
 def print_error(cause):
     print(cause)
-    print('uso: snyk-mass-delete-ignore-issue.py -a <api-key> -o <org-id> -i <issue-id> [-c]')
-    print('Para más ayuda usa el comando -h o --help')
+    print('Usage: snyk-mass-delete-ignore-issue.py -a <api-key> -o <org-id> -i <issue-id> [-c]')
+    print('Use -h or --help for better help.')
     sys.exit(2)
 
 def get_projects_affected_by_issue(api_key, org_id, issue_id):
-    # Obtiene todos proyectos en los cuales un issue está presente.
     values = { "filters": { "orgs" : [org_id], "issues" : [issue_id] } }
     data = json.dumps(values)
     data = data.encode('utf-8')
@@ -36,15 +35,15 @@ def get_projects_affected_by_issue(api_key, org_id, issue_id):
     project_names = [i['name'] for i in response['results'][0]['projects']]
     for i in project_names:
         print(i)
-    print('Total de proyectos a cambiar:', len(project_names))
+    print('Total amount of affected projects:', len(project_names))
     return project_ids
 
 def delete_mass_ignore(api_key, org_id, issue_id, reason, reason_type, expires):
     # Itera sobre la lista de proyectos y genera una excepción temporal sobre el issue.
     project_ids = get_projects_affected_by_issue(api_key, org_id, issue_id)
-    print('¿Desea continuar con la eliminación de las excepciones? (Y/n)')
+    print('¿Do you wish to continue? (Y/n)')
     if input() in ('y', ''):
-        print('Eliminando excepciones...')
+        print('Deleting ignores...')
     else:
         sys.exit(1)
     headers = {
@@ -60,34 +59,30 @@ def delete_mass_ignore(api_key, org_id, issue_id, reason, reason_type, expires):
 
 def check_projects(api_key, org_id, issue_id):
     if issue_id ==  '':
-        print('Un ID de issue es requerido para realizar la verificación.')
+        print('An issue ID is required to run the query.')
         sys.exit(2)
     get_projects_affected_by_issue(api_key, org_id,issue_id)
     sys.exit(0)
 
 def main(argv):
-    # Esta automatización tiene como flujo de trabajo:
-    # - Busca un issue en todos los proyectos de la empresa y genera la lista
-    # de proyectos afectados por un issue.
-    # - Elimina la excepción emitida para todos los proyectos encontrados (si la hay).
     api_key, org_id, issue_id = '', '', ''
     check_only = False
     try:
-        opts, args = getopt.getopt(argv, 'ha:o:i:c', ['help', 'api-key=', 'org-id=', 'issue-id=', 'check-project-list'])
+        opts, args = getopt.getopt(argv, 'ha:o:i:c', ['help', 'api-key=', 'org-id=', 'issue-id=', 'query'])
     except getopt.GetoptError:
-        print('uso: snyk-mass-delete-ignore-issue.py -a <api-key> -o <org-id> -i <issue-id> [-c]')
-        print('Para más ayuda usa el comando -h o --help')
+        print('Usage: snyk-mass-delete-ignore-issue.py -a <api-key> -o <org-id> -i <issue-id> [-q]')
+        print('Use -h or --help for better help.')
         sys.exit(2)
     for opt, arg in opts:
         if opt in ('-h', '--help'):
             print('''
-    uso: snyk-mass-delete-ignore-issue.py -a <api-key> -o <org-id> -i <issue-id> [-c]
-    Genera excepciones en masa de un issue para todos los proyectos afectados según el ID del issue (vulnerabilidad o problema de licencia).
+    Usage: snyk-mass-delete-ignore-issue.py -a <api-key> -o <org-id> -i <issue-id> [-c]
+    Removes any ignore created for an issue identified with an issue ID in all projects affected (dependency or license issue).
 
-    -a / --api-key : API Key de la cuenta de servicio de Snyk. Requerido.
-    -o / --org-id : El ID de la organización en Snyk. Requerido.
-    -i / --issue-id : El ID del issue al que se le va a generar la excepción. Requerido.
-    -c / --check-project-list : No aplica excepciones, solo lista los proyectos que van a ser afectados.
+    -a / --api-key : Snyk's service account API key. Required.
+    -o / --org-id : Org's ID on Snyk. Required.
+    -i / --issue-id : The issue ID to delete the ignore. Required.
+    -q / --query : Doesn\'t ignore vulnerabilities, just queries the affected projects. Optional.
             ''')
             sys.exit(0)
         elif opt in ('-a', '--api-key'):
@@ -96,14 +91,14 @@ def main(argv):
             org_id = arg
         elif opt in ('-i', '--issue-id'):
             issue_id = arg
-        elif opt in ('-c', '--check'):
+        elif opt in ('-q', '--query'):
             check_only = True
     if api_key == '':
-        print_error('Se requiere un API Key de Snyk para continuar...')
+        print_error('A valid API key is required to continue...')
     if org_id == '':
-        print_error('Se requiere el ID de la organización en Snyk para continuar...')
+        print_error('An org ID is required to continue...')
     if issue_id ==  '':
-        print_error('Un ID de issue es requerido para continuar...')
+        print_error('An issue ID is required to continue...')
     if check_only:
         check_projects(api_key, org_id, issue_id)
     else:

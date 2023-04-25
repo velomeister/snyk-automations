@@ -79,7 +79,7 @@ def main(argv):
         if opt in ('-h', '--help'):
             print('''
     Usage: snyk-mass-ignore-issue.py -a <api-key> -o <org-id> -i <issue-id> [-r <reason>] [-t <reasonType>] [-e <expiration-date>] [-c]
-    Ignores vulnerabilities identified by an issue ID in mass for all projects affected (dependency or license issue).
+    Ignores issues identified by an issue ID in mass for all projects affected (dependency or license issue).
 
     -a / --api-key : Snyk's service account API key. Required.
     -o / --org-id : Org's ID on Snyk. Required.
