@@ -6,6 +6,12 @@ import sys
 import getopt
 import datetime
 
+def print_error(cause):
+    print(cause)
+    print('uso: snyk-mass-delete-ignore-issue.py -a <api-key> -o <org-id> -i <issue-id> [-c]')
+    print('Para más ayuda usa el comando -h o --help')
+    sys.exit(2)
+
 def get_projects_affected_by_issue(api_key, org_id, issue_id):
     # Obtiene todos proyectos en los cuales un issue está presente.
     values = { "filters": { "orgs" : [org_id], "issues" : [issue_id] } }
@@ -93,20 +99,11 @@ def main(argv):
         elif opt in ('-c', '--check'):
             check_only = True
     if api_key == '':
-        print('Se requiere un API Key de Snyk para continuar...')
-        print('uso: snyk-mass-delete-ignore-issue.py -a <api-key> -o <org-id> -i <issue-id> [-c]')
-        print('Para más ayuda usa el comando -h o --help')
-        sys.exit(2)
+        print_error('Se requiere un API Key de Snyk para continuar...')
     if org_id == '':
-        print('Se requiere el ID de la organización en Snyk para continuar...')
-        print('uso: snyk-mass-delete-ignore-issue.py -a <api-key> -o <org-id> -i <issue-id> [-c]')
-        print('Para más ayuda usa el comando -h o --help')
-        sys.exit(2)
+        print_error('Se requiere el ID de la organización en Snyk para continuar...')
     if issue_id ==  '':
-        print('Un ID de issue es requerido para continuar...')
-        print('uso: snyk-mass-delete-ignore-issue.py -a <api-key> -o <org-id> -i <issue-id> [-c]')
-        print('Para más ayuda usa el comando -h o --help')
-        sys.exit(2)
+        print_error('Un ID de issue es requerido para continuar...')
     if check_only:
         check_projects(api_key, org_id, issue_id)
     else:
