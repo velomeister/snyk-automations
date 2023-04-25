@@ -39,7 +39,6 @@ def get_projects_affected_by_issue(api_key, org_id, issue_id):
     return project_ids
 
 def delete_mass_ignore(api_key, org_id, issue_id, reason, reason_type, expires):
-    # Itera sobre la lista de proyectos y genera una excepción temporal sobre el issue.
     project_ids = get_projects_affected_by_issue(api_key, org_id, issue_id)
     print('¿Do you wish to continue? (Y/n)')
     if input() in ('y', ''):

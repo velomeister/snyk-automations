@@ -105,7 +105,6 @@ def main(argv):
             else:
                 reason_type = arg
         elif opt in ('-e', '--expires'):
-            # expires = arg
             expires = arg + " 08:00:00"
         elif opt in ('-q', '--query'):
             check_only = True
